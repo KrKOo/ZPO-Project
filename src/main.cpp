@@ -133,13 +133,15 @@ uchar background_diff(uchar* p, codeBook& c, int numChannels, int* minMod, int* 
 }
 
 void processFrame(cv::Mat& frame, cv::Mat& newFrame, std::vector<std::vector<codeBook>>& codebooks, int* minMod, int* maxMod, unsigned* cbBounds) {
-    newFrame.create(frame.size(), CV_8UC1);
+    newFrame.create(frame.size(), CV_8UC3);
 
     for (int x = 0; x < frame.rows; x++) {
         for (int y = 0; y < frame.cols; y++) {
             uchar* p = frame.ptr(x, y);
             uchar* p2 = newFrame.ptr(x, y);
             p2[0] = background_diff(p, codebooks[x][y], CHANNELS, minMod, maxMod);
+            p2[1] = p2[0];
+            p2[2] = p2[0];
         }
     }
 
@@ -164,7 +166,7 @@ int main(int argc, char* argv[]) {
     int minMod[3] = {10, 10, 10}; 
     int maxMod[3] = {10, 10, 10}; 
 
-    while ((option = getopt(argc, argv, "cv:")) != -1) {
+    while ((option = getopt(argc, argv, "cv:o:")) != -1) {
         switch (option) {
             case 'c':
                 useCamera = true;
@@ -172,17 +174,17 @@ int main(int argc, char* argv[]) {
             case 'v':
                 videoPath = optarg;
                 break;
-            /*case 'o':
+            case 'o':
                 outputPath = optarg;
-                break;*/
+                break;
             default:
                 std::cerr << "Usage: " << argv[0] << " [-c] [-v video_path] [-o output_path]\n";
                 return -1;
         }
     }
-
-    //std::cout<<outputPath<<std::endl;
-    /*if (!outputPath.empty())
+    std::cout << "Video path:" << videoPath << std::endl;
+    std::cout << "Output path:" << outputPath << std::endl;
+    if (!outputPath.empty())
     {
         std::filesystem::path dir(outputPath);
         if (!std::filesystem::exists(dir))
@@ -193,7 +195,7 @@ int main(int argc, char* argv[]) {
                
             }
         }
-    }*/
+    }
 
     if (useCamera) {
 
@@ -248,20 +250,21 @@ int main(int argc, char* argv[]) {
         width = images[0].cols;
         height = images[0].rows;
         std::vector<std::vector<codeBook>> codebooks(height, std::vector<codeBook>(width));
-
+        int iter = 0;
         for(auto &frame : images){
 
             processFrame(frame, newFrame, codebooks, minMod, maxMod, cbBounds);
             cv::imshow("Frame", newFrame);
-            /*
-            if (!outputPath.empty()){
+
+            
+            if (!outputPath.empty() && iter != 0){
                 std::string filename = outputPath + "/frame_" + std::to_string(cv::getTickCount()) + ".png";
                 if (!cv::imwrite(filename, newFrame))
                 {
                     std::cerr << "Failed to write image: " << filename << std::endl;
                 }
-            }*/
-
+            }
+            iter++;
             if (cv::waitKey(1) == 'q') break;
         }
 
