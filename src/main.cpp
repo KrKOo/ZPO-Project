@@ -160,13 +160,15 @@ int main(int argc, char* argv[]) {
     bool useCamera = false;
     std::string outputPath;
     std::string videoPath;
+    std::string newVideoPath;
+    std::string newImagePath;
     cv::Mat frame, newFrame;
     int width, height;
     unsigned cbBounds[3] = {10, 10, 10}; 
     int minMod[3] = {10, 10, 10}; 
     int maxMod[3] = {10, 10, 10}; 
 
-    while ((option = getopt(argc, argv, "cv:o:")) != -1) {
+    while ((option = getopt(argc, argv, "cv:o:n:i:")) != -1) {
         switch (option) {
             case 'c':
                 useCamera = true;
@@ -177,13 +179,20 @@ int main(int argc, char* argv[]) {
             case 'o':
                 outputPath = optarg;
                 break;
+            case 'n':
+                newVideoPath = optarg;
+                break;
+            case 'i':
+                newImagePath = optarg;
+                break;
             default:
-                std::cerr << "Usage: " << argv[0] << " [-c] [-v video_path] [-o output_path]\n";
+                std::cerr << "Usage: " << argv[0] << " [-c] [-v video_path] [-o output_path] [-n new video path] [-i new background image path]\n";
                 return -1;
         }
     }
     std::cout << "Video path:" << videoPath << std::endl;
     std::cout << "Output path:" << outputPath << std::endl;
+    std::cout << "New vide path:" << newVideoPath << std::endl;
     if (!outputPath.empty())
     {
         std::filesystem::path dir(outputPath);
@@ -192,6 +201,18 @@ int main(int argc, char* argv[]) {
             if (!std::filesystem::create_directories(dir))
             {
                 std::cerr << "Failed to create directory: " << outputPath << std::endl;
+               
+            }
+        }
+    }
+    if (!newVideoPath.empty())
+    {
+        std::filesystem::path dir(newVideoPath);
+        if (!std::filesystem::exists(dir))
+        {
+            if (!std::filesystem::create_directories(dir))
+            {
+                std::cerr << "Failed to create directory: " << newVideoPath << std::endl;
                
             }
         }
@@ -252,7 +273,6 @@ int main(int argc, char* argv[]) {
         std::vector<std::vector<codeBook>> codebooks(height, std::vector<codeBook>(width));
         int iter = 0;
         for(auto &frame : images){
-
             processFrame(frame, newFrame, codebooks, minMod, maxMod, cbBounds);
             cv::imshow("Frame", newFrame);
 
@@ -263,6 +283,27 @@ int main(int argc, char* argv[]) {
                 {
                     std::cerr << "Failed to write image: " << filename << std::endl;
                 }
+            }
+            
+            if(!newVideoPath.empty() && iter != 0){
+                cv::Mat newImage = cv::imread(newImagePath);
+                cv::Mat outputFrame = cv::Mat::zeros(newFrame.size(), CV_8UC3);
+                newFrame.forEach<cv::Vec3b>([&](cv::Vec3b &pixel, const int pos[]) -> void {
+                    int x = pos[0];
+                    int y = pos[1];
+                    if (pixel[0] == 0) {
+                        outputFrame.at<cv::Vec3b>(x, y) = newImage.at<cv::Vec3b>(x, y);
+                    }
+                    else{
+                        outputFrame.at<cv::Vec3b>(x, y) = frame.at<cv::Vec3b>(x, y);
+                    }
+                });
+                std::string newFilename = newVideoPath + "/frame_" + std::to_string(cv::getTickCount()) + ".png";
+                if (!cv::imwrite(newFilename, outputFrame))
+                {
+                    std::cerr << "Failed to write image: " << newFilename << std::endl;
+                }
+
             }
             iter++;
             if (cv::waitKey(1) == 'q') break;
