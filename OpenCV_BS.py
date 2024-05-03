@@ -56,7 +56,7 @@ elif args.source == 'folder':
     for path in output_dirs.values():
         os.makedirs(path, exist_ok=True)
 
-    frame_files = sorted(glob.glob(os.path.join(args.path, '*.jpg')))
+    frame_files = sorted(glob.glob(os.path.join(args.path, '*.jpg')) + glob.glob(os.path.join(args.path, '*.png')))
     frame_count = 0
     for frame_file in frame_files:
         img = cv2.imread(frame_file)
