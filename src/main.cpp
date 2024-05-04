@@ -325,7 +325,7 @@ int main(int argc, char *argv[])
 
             if (!outputPath.empty() && iter != 0)
             {
-                std::string filename = outputPath + "/frame_" + std::to_string(cv::getTickCount()) + ".png";
+                std::string filename = outputPath + "/frame_" + std::to_string(iter) + ".png";
                 if (!cv::imwrite(filename, newFrame))
                 {
                     std::cerr << "Failed to write image: " << filename << std::endl;
