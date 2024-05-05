@@ -1,8 +1,6 @@
 import cv2
-import numpy as np
 import os
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
-import sys
 
 
 def load_mask(filename):

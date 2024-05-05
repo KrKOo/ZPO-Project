@@ -1,13 +1,13 @@
-import cv2
+# Description: Evaluate the masks of a video using the ground truth masks.
+# Input: GT mask sequence, prediction mask sequence
+# Output: Accuracy, Precision, Recall, F1 Score
+
 import numpy as np
-import os
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 import sys
-from .eval_utils import load_masks, evaluate_masks
+from eval_utils import load_masks, evaluate_masks
 
 
 def main(video_name):
-
     base_path = "output"
     gt_path = f"data/gt/{video_name}"
     gt_masks = load_masks(gt_path)[1:]

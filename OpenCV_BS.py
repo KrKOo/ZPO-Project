@@ -1,4 +1,7 @@
-import numpy as np
+# Description: This script demonstrates background subtraction using MOG and MOG2 methods.
+# Input: Video feed from camera or images in a folder
+# Output: Background mask sequences
+
 import cv2
 import os
 import glob

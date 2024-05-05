@@ -1,6 +1,8 @@
-import sys
+# Description: Single frame evaluation script
+# Input: GT mask, prediction sequence
+# Output: Accuracy, Precision, Recall, F1 Score
+
 import os
-import cv2
 from eval_utils import load_mask, evaluate_mask
 
 GT_DIR = "data/gt"
@@ -50,7 +52,6 @@ def get_all_prec_images():
 
 
 def eval_results(gt_images, pred_images):
-
     for directory in SINGLE_FRAME_EVAL:
         gt_mask = load_mask(gt_images[directory])
         for algorithm in ALGORITHMS:

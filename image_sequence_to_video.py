@@ -1,3 +1,7 @@
+# Description: This script converts the image sequences to videos for easier viewing.
+# Input: Image sequences
+# Output: Videos
+
 import os
 import cv2
 

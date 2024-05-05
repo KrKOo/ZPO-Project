@@ -1,3 +1,5 @@
+# Description: Python implementation of the Codebook algorithm.
+
 import cv2
 import numpy as np
 import os
@@ -5,9 +7,6 @@ import os
 CHANNELS = 3
 WIDTH = 854
 HEIGHT = 480
-
-# WIDTH = 400
-# HEIGHT = 226
 
 
 class CodeElement:
@@ -142,6 +141,7 @@ def backgroundDiff(pixel, cb, numChannels, minMod, maxMod):
 
 codebooks = np.array([[Codebook() for i in range(WIDTH)] for j in range(HEIGHT)])
 
+# Load image sequence from the butterfly folder
 files = [f for f in os.listdir("butterfly")]
 files.sort()
 
@@ -170,43 +170,3 @@ for image in images:
         break
 
 cv2.destroyAllWindows()
-
-
-# vidcap = cv2.VideoCapture("video2.mp4")
-# success, image = vidcap.read()
-# count = 0
-
-# while success:
-#     if count % 10 != 0:
-#         success, image = vidcap.read()
-#         count += 1
-#         continue
-
-#     success, image = vidcap.read()
-
-#     print("asdf")
-#     # image = cv2.cvtColor(image, cv2.COLOR_BGR2YUV)
-#     # cv2.imshow("asdf", image)
-
-#     newPixels = np.array(
-#         [[0 for i in range(WIDTH)] for j in range(HEIGHT)], dtype=np.uint8
-#     )
-#     for x in range(image.shape[0]):
-#         for y in range(image.shape[1]):
-#             newPixels[x][y] = backgroundDiff(
-#                 image[x, y], codebooks[x, y], 3, [10, 10, 10], [10, 10, 10]
-#             )
-
-#     cv2.imshow("frame", newPixels)
-
-#     print("NEW IMAGE")
-
-#     for x in range(image.shape[0]):
-#         for y in range(image.shape[1]):
-#             pixel = image[x, y]
-#             updateCodebook(pixel, codebooks[x, y], [10, 10, 10], 3)
-
-#     if cv2.waitKey(1) == ord("q"):
-#         break
-
-#     count += 1
